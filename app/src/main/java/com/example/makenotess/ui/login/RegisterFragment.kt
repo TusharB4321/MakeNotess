@@ -5,13 +5,16 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.example.makenotess.AuthViewModel
 import com.example.makenotess.R
 import com.example.makenotess.databinding.FragmentRegisterBinding
 import com.example.makenotess.models.UserRequest
+import com.example.makenotess.utils.NetworkResult
 import com.example.makenotess.utils.TokenManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -44,10 +47,26 @@ class RegisterFragment : Fragment() {
             it.findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
         binding.btnSignUp.setOnClickListener {
-            authViewModel.registerUser(UserRequest("tbodalwar@gmail.com","432002","Tushar"))
+            authViewModel.registerUser(UserRequest("tbodalwar@gmail.com", "432002", "Tushar"))
         }
 
+        authViewModel.userResponseLiveData.observe(viewLifecycleOwner) {
 
+            binding.spinKit.isVisible=false
+            when (it) {
+                is NetworkResult.Success -> {
+                    findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
+                }
+                is NetworkResult.Error -> {
+                    binding.txtError.text = it.message
+                }
+                is NetworkResult.Loading -> {
+                    binding.spinKit.isVisible = true
+                }
+
+            }
+
+        }
     }
 
 
