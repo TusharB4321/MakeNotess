@@ -14,6 +14,7 @@ import com.example.makenotess.AuthViewModel
 import com.example.makenotess.R
 import com.example.makenotess.databinding.FragmentRegisterBinding
 import com.example.makenotess.models.UserRequest
+import com.example.makenotess.utils.Helper
 import com.example.makenotess.utils.NetworkResult
 import com.example.makenotess.utils.TokenManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -47,12 +48,24 @@ class RegisterFragment : Fragment() {
             it.findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
         binding.btnSignUp.setOnClickListener {
-            authViewModel.registerUser(UserRequest("tbodalwar@gmail.com", "432002", "Tushar"))
+            val validationResult=validateUser()
+
+            if (validationResult.first){
+
+                authViewModel.registerUser(getUserRequest())
+
+            }else{
+                binding.txtError.text=validationResult.second
+            }
         }
 
+        bindObserve()
+    }
+
+    private fun bindObserve() {
         authViewModel.userResponseLiveData.observe(viewLifecycleOwner) {
 
-            binding.spinKit.isVisible=false
+            binding.spinKit.isVisible = false
             when (it) {
                 is NetworkResult.Success -> {
                     findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
@@ -69,8 +82,16 @@ class RegisterFragment : Fragment() {
         }
     }
 
-
-
+    private fun getUserRequest():UserRequest{
+        val username=binding.txtUsername.text.toString()
+        val email=binding.txtEmail.text.toString()
+        val password=binding.txtPassword.text.toString()
+        return UserRequest(email,password,username)
+    }
+    private fun validateUser(): Pair<Boolean, String> {
+       val request=getUserRequest()
+        return Helper.validateCredential(request.username,request.email,request.password,false)
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()

@@ -6,6 +6,7 @@ import android.util.Patterns
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import java.lang.Exception
+import java.util.regex.Matcher
 
 class Helper {
     companion object {
@@ -20,6 +21,23 @@ class Helper {
             }catch (e: Exception){
 
             }
+        }
+
+        fun validateCredential( username:String,email:String,password:String,isLogin:Boolean):Pair<Boolean,String>{
+
+            var result=Pair(true,"")
+
+            if (!isLogin&&TextUtils.isEmpty(username)||TextUtils.isEmpty(email)||TextUtils.isEmpty(password)){
+                result=Pair(false,"please provide credentials")
+            }
+            else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
+                result=Pair(false,"please provide valid email")
+            }else if (password.length<=5){
+                result=Pair(false,"password length should be greater than 5")
+            }
+
+            return result
+
         }
     }
 
