@@ -28,7 +28,8 @@ class RegisterFragment : Fragment() {
 
     private val authViewModel by viewModels<AuthViewModel>() //behind the scene ye ViewModelProvider ko hi
                                                              //call kr raha hai
-
+   @Inject
+    lateinit var tokenManager:TokenManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +39,9 @@ class RegisterFragment : Fragment() {
 
         _binding = FragmentRegisterBinding.inflate(inflater, container, false)
 
+        if (tokenManager.getToken()!=null){
+            findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
+        }
         return binding.root
 
     }
@@ -51,7 +55,6 @@ class RegisterFragment : Fragment() {
             val validationResult=validateUser()
 
             if (validationResult.first){
-
                 authViewModel.registerUser(getUserRequest())
 
             }else{
@@ -68,6 +71,8 @@ class RegisterFragment : Fragment() {
             binding.spinKit.isVisible = false
             when (it) {
                 is NetworkResult.Success -> {
+
+                    tokenManager.saveToken(it.data!!.token)
                     findNavController().navigate(R.id.action_registerFragment_to_mainFragment)
                 }
                 is NetworkResult.Error -> {

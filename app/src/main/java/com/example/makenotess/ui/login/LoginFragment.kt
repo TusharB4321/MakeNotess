@@ -15,6 +15,7 @@ import com.example.makenotess.databinding.FragmentLoginBinding
 import com.example.makenotess.models.UserRequest
 import com.example.makenotess.utils.Helper
 import com.example.makenotess.utils.NetworkResult
+import com.example.makenotess.utils.TokenManager
 import dagger.hilt.android.AndroidEntryPoint
 import org.json.JSONObject
 import javax.inject.Inject
@@ -27,6 +28,8 @@ class LoginFragment : Fragment() {
 
     private val authViewModel by viewModels<AuthViewModel>()
 
+    @Inject
+    lateinit var tokenManager: TokenManager
 
 
     override fun onCreateView(
@@ -77,6 +80,7 @@ class LoginFragment : Fragment() {
             binding.spinKit.isVisible=false
             when(it){
                 is NetworkResult.Success->{
+                    tokenManager.saveToken(it.data!!.token)
                     findNavController().navigate(R.id.action_loginFragment_to_mainFragment)
                 }
                 is NetworkResult.Error->{
