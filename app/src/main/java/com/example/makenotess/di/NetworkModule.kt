@@ -1,5 +1,6 @@
 package com.example.makenotess.di
 
+import com.example.makenotess.api.AuthInceptor
 import com.example.makenotess.api.NoteAPI
 import com.example.makenotess.api.UserAPI
 import com.example.makenotess.utils.Constants
@@ -34,6 +35,13 @@ class NetworkModule {
     @Provides
     fun providesNoteAPI(retrofitBuilder: Retrofit.Builder, okHttpClient: OkHttpClient): NoteAPI {
         return retrofitBuilder.client(okHttpClient).build().create(NoteAPI::class.java)
+    }
+
+
+    @Singleton
+    @Provides
+    fun provideOkhttpClient(authInceptor: AuthInceptor):OkHttpClient{
+        return OkHttpClient.Builder().addInterceptor(authInceptor).build()
     }
 
 
